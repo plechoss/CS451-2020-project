@@ -25,7 +25,7 @@ public class Main {
     }
 
     public static void logMessage(Message msg) {
-        String line = "received " + msg.getSeq_nr() + " from " + msg.getSender_id();
+        String line = "received " + msg.getSeq_nr() + " from " + msg.getSender_id() + "\n";
 
         String logName = "log" + ProcessHandle.current().pid();
         Logger logger = Logger.getLogger(logName);
@@ -33,7 +33,7 @@ public class Main {
 
         try {
             // This block configure the logger with handler and formatter
-            fh = new FileHandler("/Users/michal/Desktop/" + logName);
+            fh = new FileHandler("/Users/michal/Desktop/" + logName, true);
             logger.addHandler(fh);
 
             SimpleFormatter formatter = new SimpleFormatter();
