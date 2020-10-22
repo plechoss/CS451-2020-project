@@ -20,7 +20,6 @@ public class UDP implements Runnable {
 
     private static DatagramSocket socket;
     private static InetAddress address;
-    private static ObjectOutputStream buf;
 
     private boolean running;
 
@@ -32,25 +31,21 @@ public class UDP implements Runnable {
         this.barrierPort = barrierPort;
         this.signalIP = signalIP;
         this.signalPort = signalPort;
-        this.run();
     }
 
     //send one message to all the available hosts
+    //should be good now
     public static void broadcast(Message msg) throws java.lang.InterruptedException {
         while (true) {
             try {
                 socket = new DatagramSocket();
                 address = InetAddress.getByAddress(hosts.get(id).getIp().getBytes());
 
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                buf = new ObjectOutputStream(bos);
-                buf.writeObject(msg);
-                buf.flush();
-                byte[] bytes = bos.toByteArray();
-
+                byte[] buf = msg.toString().getBytes();
+                DatagramPacket packet;
                 for (Host host : hosts) {
                     InetAddress ip = InetAddress.getByAddress(host.getIp().getBytes());
-                    DatagramPacket packet = new DatagramPacket(bytes, bytes.length, ip, host.getPort());
+                    packet = new DatagramPacket(buf, buf.length, ip, host.getPort());
                     socket.send(packet);
                 }
             } catch (Exception e) {
@@ -61,7 +56,7 @@ public class UDP implements Runnable {
     }
 
     @Override
-    public void run(){
+    public void run() {
         byte[] buf = new byte[65535];
 
         while (running) {
@@ -73,8 +68,10 @@ public class UDP implements Runnable {
                     InetAddress address = packet.getAddress();
                     int port = packet.getPort();
                     packet = new DatagramPacket(buf, buf.length, address, port);
-                    String received
+                    String payload
                             = new String(packet.getData(), 0, packet.getLength());
+
+                    Main.logMessage(new Message(payload));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
