@@ -1,16 +1,17 @@
 package cs451;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
+//mostly based on https://www.baeldung.com/udp-in-java
 public class UDP implements Runnable {
-    private long pid;
+    private static long pid;
     private static int id;
     private static List<Host> hosts;
     private String barrierIP;
@@ -19,6 +20,7 @@ public class UDP implements Runnable {
     private int signalPort;
 
     private static DatagramSocket socket;
+    private static int port;
     private static InetAddress address;
 
     private boolean running;
@@ -31,54 +33,66 @@ public class UDP implements Runnable {
         this.barrierPort = barrierPort;
         this.signalIP = signalIP;
         this.signalPort = signalPort;
+
+        this.port = hosts.get(id).getPort();
+        try {
+            this.address = InetAddress.getByName(hosts.get(id).getIp());
+            this.socket = new DatagramSocket(this.port, this.address);
+        } catch (Exception e) {
+            logMessage(e.toString());
+        }
     }
 
-    //send one message to all the available hosts
-    //should be good now
-    public static void broadcast(Message msg) throws java.lang.InterruptedException {
-        while (true) {
-            try {
-                socket = new DatagramSocket();
-                address = InetAddress.getByAddress(hosts.get(id).getIp().getBytes());
+    public static void logMessage(String msg) {
+        String logName = "logUDP" + pid;
+        Logger logger = Logger.getLogger(logName);
+        FileHandler fh;
 
-                byte[] buf = msg.toString().getBytes();
-                DatagramPacket packet;
-                for (Host host : hosts) {
-                    InetAddress ip = InetAddress.getByAddress(host.getIp().getBytes());
-                    packet = new DatagramPacket(buf, buf.length, ip, host.getPort());
-                    socket.send(packet);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            // This block configures the logger with handler and formatter
+            fh = new FileHandler("/Users/michal/Desktop/logs/" + logName, true);
+            logger.addHandler(fh);
+
+            SimpleFormatter formatter = new SimpleFormatter();
+            fh.setFormatter(formatter);
+
+        } catch (SecurityException | IOException e) {
+            e.printStackTrace();
+        }
+        logger.info(msg);
+    }
+
+    public static void broadcast(Message msg) throws java.lang.InterruptedException {
+        try {
+            byte[] buf = msg.toString().getBytes();
+            DatagramPacket packet;
+            for (Host host : hosts) {
+                InetAddress ip = InetAddress.getByName(host.getIp());
+                packet = new DatagramPacket(buf, buf.length, ip, host.getPort());
+                socket.send(packet);
             }
-            TimeUnit.SECONDS.sleep(1);
+        } catch (Exception e) {
+            logMessage("Error in broadcast()");
+            logMessage(e.toString());
         }
     }
 
     @Override
     public void run() {
         byte[] buf = new byte[65535];
+        try {
+            DatagramPacket packet = new DatagramPacket(buf, buf.length);
+            while (Main.isRunning()) {
+                socket.receive(packet);
 
-        while (running) {
-            try {
-                while (Main.isRunning()) {
-                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                    socket.receive(packet);
-
-                    InetAddress address = packet.getAddress();
-                    int port = packet.getPort();
-                    packet = new DatagramPacket(buf, buf.length, address, port);
-                    String payload
-                            = new String(packet.getData(), 0, packet.getLength());
-
-                    Main.logMessage(new Message(payload));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                socket.close();
+                String payload = new String(packet.getData(), 0, packet.getLength());
+                Main.logMessage(new Message(payload));
             }
+        } catch (IOException e) {
+            logMessage("Error in run()");
+            logMessage(e.toString());
+        } finally {
+            socket.close();
         }
-        socket.close();
     }
 }
