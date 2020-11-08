@@ -84,10 +84,10 @@ public class Main {
 
         System.out.println("Broadcasting messages...");
 
-        new Thread(new UDP(pid, parser.myId(), parser.hosts(), parser.barrierIp(), parser.barrierPort(), parser.signalIp(), parser.signalPort())).start();
+        new Thread(new URB(pid, parser.myId(), parser.hosts(), parser.barrierIp(), parser.barrierPort(), parser.signalIp(), parser.signalPort())).start();
 
         for (int i = 0; i < 10; i++) {
-            UDP.broadcast(new Message(i, false, -1, parser.myId()));
+            URB.broadcast(new Message(i, parser.myId(), parser.myId()));
         }
 
         System.out.println("Signaling end of broadcasting messages");

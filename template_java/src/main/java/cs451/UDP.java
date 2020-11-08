@@ -62,7 +62,7 @@ public class UDP implements Runnable {
         logger.info(msg);
     }
 
-    public static void broadcast(Message msg) throws java.lang.InterruptedException {
+    public static void broadcast(Message msg){
         try {
             byte[] buf = msg.toString().getBytes();
             DatagramPacket packet;
@@ -86,7 +86,8 @@ public class UDP implements Runnable {
                 socket.receive(packet);
 
                 String payload = new String(packet.getData(), 0, packet.getLength());
-                Main.logMessage(new Message(payload));
+
+                BEB.deliver(new Message(payload));
             }
         } catch (IOException e) {
             logMessage("Error in run()");
