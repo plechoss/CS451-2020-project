@@ -14,10 +14,10 @@ public class Message implements Serializable {
     }
 
     public Message(String payload) {
-        String[] fields = payload.split(",", 4);
+        String[] fields = payload.split(",", 3);
 
         this.seq_nr = Integer.parseInt(fields[0]);
-        this.creator_id = Integer.parseInt(fields[2]);
+        this.creator_id = Integer.parseInt(fields[1]);
         this.sender_id = Integer.parseInt(fields[2]);
     }
 
