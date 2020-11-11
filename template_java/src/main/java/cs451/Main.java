@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class Main {
-    List<Message> delivered = new ArrayList<>();
+    private static List<Message> delivered = new ArrayList<>();
 
     private static void handleSignal() {
         //immediately stop network packet processing
@@ -50,7 +50,7 @@ public class Main {
     }
 
     public static void deliver(Message msg){
-
+        delivered.add(msg);
     }
 
     public static boolean isRunning() {
@@ -91,10 +91,15 @@ public class Main {
 
         System.out.println("Broadcasting messages...");
 
-        new Thread(new FIFO(pid, parser.myId(), parser.hosts(), parser.barrierIp(), parser.barrierPort(), parser.signalIp(), parser.signalPort())).start();
+        new Thread(new FIFO(pid, parser.myId(), parser.hosts())).start();
+        int[] vc = new int[parser.hosts().size()];
+
+        for (int i = 0; i < parser.hosts().size(); i++) {
+            vc[i] = 0;
+        }
 
         for (int i = 0; i < 10; i++) {
-            FIFO.broadcast(new Message(i, parser.myId(), parser.myId()));
+            FIFO.broadcast(new Message(i, parser.myId(), parser.myId(), vc));
         }
 
         System.out.println("Signaling end of broadcasting messages");
