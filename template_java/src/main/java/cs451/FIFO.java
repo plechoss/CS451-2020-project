@@ -1,8 +1,7 @@
 package cs451;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FIFO implements Runnable {
 
@@ -10,8 +9,7 @@ public class FIFO implements Runnable {
     private static int id;
     private static List<Host> hosts;
 
-    private static Set<Integer> correct; //Set<long> maybe???
-    private static Set<Message> pending;
+    private static ConcurrentHashMap<Message, Boolean> pending;
     private static int[] vc;
 
     public FIFO(long pid, int id, List<Host> hosts) {
@@ -19,16 +17,11 @@ public class FIFO implements Runnable {
         this.id = id;
         this.hosts = hosts;
 
-        this.correct = new HashSet<>();
-        for (Host host : hosts) {
-            correct.add(host.getId());
-        }
-
-        this.vc = new int[correct.size()];
-        for (int i = 0; i < correct.size(); i++) {
+        this.vc = new int[hosts.size()];
+        for (int i = 0; i < hosts.size(); i++) {
             vc[i] = 0;
         }
-        this.pending = new HashSet<>();
+        this.pending = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -37,19 +30,20 @@ public class FIFO implements Runnable {
     }
 
     public static void broadcast(Message msg) {
-        Main.deliver(msg);
-        URB.broadcast(msg);
-        vc[id]++;
+        Message new_message = new Message(msg.getSeq_nr(), msg.getCreator_id(), msg.getSender_id(), vc);
+        Main.deliver(new_message);
+        URB.broadcast(new_message);
+        vc[id-1]++;
     }
 
     public static void deliver(Message msg) {
         if (msg.getCreator_id() != id) {
-            pending.add(msg);
+            pending.put(msg, true);
             //deliver-pending stuff
             boolean keepGoing = true;
             while (keepGoing) {
                 keepGoing = false;
-                for (Message m : pending) {
+                for (Message m : pending.keySet()) {
                     boolean canDeliverMessage = true;
                     int[] msg_vc = m.getVector_clock();
                     for (int i = 0; i < hosts.size(); i++) {
@@ -60,8 +54,10 @@ public class FIFO implements Runnable {
                     }
                     if (canDeliverMessage) {
                         pending.remove(m);
+                        System.out.println("Main delivering in FIFO:");
+                        System.out.println(msg);
                         Main.deliver(msg);
-                        vc[m.getCreator_id()]++;
+                        vc[m.getCreator_id()-1]++;
                         keepGoing = true;
                     }
                 }

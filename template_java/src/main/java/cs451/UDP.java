@@ -26,32 +26,14 @@ public class UDP implements Runnable {
         this.id = id;
         this.hosts = hosts;
 
-        this.port = hosts.get(id).getPort();
+        this.port = hosts.get(id-1).getPort();
         try {
-            this.address = InetAddress.getByName(hosts.get(id).getIp());
+            this.address = InetAddress.getByName(hosts.get(id-1).getIp());
             this.socket = new DatagramSocket(this.port, this.address);
         } catch (Exception e) {
-            logMessage(e.toString());
+            System.out.println("Error in setting socket in UDP constructor");
+            System.out.println(e.toString());
         }
-    }
-
-    public static void logMessage(String msg) {
-        String logName = "logUDP" + pid;
-        Logger logger = Logger.getLogger(logName);
-        FileHandler fh;
-
-        try {
-            // This block configures the logger with handler and formatter
-            fh = new FileHandler("/Users/michal/Desktop/logs/" + logName, true);
-            logger.addHandler(fh);
-
-            SimpleFormatter formatter = new SimpleFormatter();
-            fh.setFormatter(formatter);
-
-        } catch (SecurityException | IOException e) {
-            e.printStackTrace();
-        }
-        logger.info(msg);
     }
 
     public static void broadcast(Message msg){
@@ -64,8 +46,8 @@ public class UDP implements Runnable {
                 socket.send(packet);
             }
         } catch (Exception e) {
-            logMessage("Error in broadcast()");
-            logMessage(e.toString());
+            System.out.println("Error in broadcast()");
+            System.out.println(e.toString());
         }
     }
 
@@ -82,8 +64,8 @@ public class UDP implements Runnable {
                 BEB.deliver(new Message(payload));
             }
         } catch (IOException e) {
-            logMessage("Error in run()");
-            logMessage(e.toString());
+            System.out.println("Error in run()");
+            System.out.println(e.toString());
         } finally {
             socket.close();
         }

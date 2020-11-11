@@ -1,5 +1,6 @@
 package cs451;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,6 +109,7 @@ public class Main {
         }
 
         System.out.println("Signaling end of broadcasting messages");
+        System.out.println(delivered);
         coordinator.finishedBroadcasting();
 
         while (true) {
