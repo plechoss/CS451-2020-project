@@ -25,14 +25,10 @@ public class UDP implements Runnable {
 
     private boolean running;
 
-    public UDP(long pid, int id, List<Host> hosts, String barrierIP, int barrierPort, String signalIP, int signalPort) {
+    public UDP(long pid, int id, List<Host> hosts) {
         this.pid = pid;
         this.id = id;
         this.hosts = hosts;
-        this.barrierIP = barrierIP;
-        this.barrierPort = barrierPort;
-        this.signalIP = signalIP;
-        this.signalPort = signalPort;
 
         this.port = hosts.get(id).getPort();
         try {

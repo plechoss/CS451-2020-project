@@ -9,23 +9,15 @@ public class FIFO implements Runnable {
     private long pid;
     private static int id;
     private static List<Host> hosts;
-    private String barrierIP;
-    private int barrierPort;
-    private String signalIP;
-    private int signalPort;
 
     private static Set<Integer> correct; //Set<long> maybe???
     private static Set<Message> pending;
     private static int[] vc;
 
-    public FIFO(long pid, int id, List<Host> hosts, String barrierIP, int barrierPort, String signalIP, int signalPort) {
+    public FIFO(long pid, int id, List<Host> hosts) {
         this.pid = pid;
         this.id = id;
         this.hosts = hosts;
-        this.barrierIP = barrierIP;
-        this.barrierPort = barrierPort;
-        this.signalIP = signalIP;
-        this.signalPort = signalPort;
 
         this.correct = new HashSet<>();
         for (Host host : hosts) {
@@ -41,7 +33,7 @@ public class FIFO implements Runnable {
 
     @Override
     public void run() {
-        new Thread(new URB(pid, id, hosts, barrierIP, barrierPort, signalIP, signalPort)).start();
+        new Thread(new URB(pid, id, hosts)).start();
     }
 
     public static void broadcast(Message msg) {
