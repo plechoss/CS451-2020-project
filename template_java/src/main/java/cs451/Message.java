@@ -24,12 +24,11 @@ public class Message implements Serializable {
 
         //watch out for first value being "" after split
         String[] string_vc = fields[3].split("\\.");
-        this.vc = new int[string_vc.length-1];
-        for (int i = 0; i < string_vc.length-1; i++) {
+
+        this.vc = new int[string_vc.length];
+        for (int i = 0; i < string_vc.length; i++) {
             this.vc[i] = Integer.parseInt(string_vc[i]);
         }
-        System.out.println("Vector clock after parsing msg from payload:");
-        System.out.println(this.vc);
     }
 
     public int getSeq_nr() {
@@ -58,5 +57,27 @@ public class Message implements Serializable {
         }
 
         return seq_nr + "," + creator_id + "," + sender_id + vc_string;
+    }
+
+    //https://mkyong.com/java/java-how-to-overrides-equals-and-hashcode/
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof Message)) {
+            return false;
+        }
+
+        Message msg = (Message) o;
+
+        return msg.seq_nr==seq_nr &&
+                msg.creator_id==creator_id;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + seq_nr;
+        result = 31 * result + creator_id;
+        return result;
     }
 }

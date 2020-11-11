@@ -35,8 +35,6 @@ public class URB implements Runnable {
                         delivered.put(msg, true);
 
                         //deliver the message higher up
-                        System.out.println("FIFO delivering in URB:");
-                        System.out.println(msg);
                         FIFO.deliver(msg);
                     }
                 }
@@ -48,8 +46,6 @@ public class URB implements Runnable {
     }
 
     public static void broadcast(Message msg) { //DONE
-        System.out.println("Message:");
-        System.out.println(msg);
         forward.put(msg, true);
         BEB.broadcast(msg);
     }
