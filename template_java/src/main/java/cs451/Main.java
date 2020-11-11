@@ -10,12 +10,17 @@ import java.util.logging.SimpleFormatter;
 public class Main {
     private static List<Message> delivered = new ArrayList<>();
 
+    private static void writeDeliveredMessages(){
+
+    }
+
     private static void handleSignal() {
         //immediately stop network packet processing
         System.out.println("Immediately stopping network packet processing.");
 
         //write/flush output file if necessary
         System.out.println("Writing output.");
+        //writeDeliveredMessages();
     }
 
     private static void initSignalHandlers() {

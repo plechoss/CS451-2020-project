@@ -53,12 +53,12 @@ public class FIFO implements Runnable {
                     boolean canDeliverMessage = true;
                     int[] msg_vc = m.getVector_clock();
                     for (int i = 0; i < hosts.size(); i++) {
-                        if (vc[i] < msg_vc[i]){
+                        if (vc[i] < msg_vc[i]) {
                             canDeliverMessage = false;
                             break;
                         }
                     }
-                    if(canDeliverMessage){
+                    if (canDeliverMessage) {
                         pending.remove(m);
                         Main.deliver(msg);
                         vc[m.getCreator_id()]++;

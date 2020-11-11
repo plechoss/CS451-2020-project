@@ -24,7 +24,7 @@ public class Message implements Serializable {
         //watch out for first value being "" after split
         String[] string_vc = fields[3].split(".");
         this.vc = new int[string_vc.length];
-        for(int i = 0; i< string_vc.length; i++){
+        for (int i = 0; i < string_vc.length; i++) {
             this.vc[i] = Integer.parseInt(string_vc[i]);
         }
     }
@@ -33,7 +33,9 @@ public class Message implements Serializable {
         return seq_nr;
     }
 
-    public int getCreator_id() { return creator_id; }
+    public int getCreator_id() {
+        return creator_id;
+    }
 
     public int getSender_id() {
         return sender_id;
@@ -45,9 +47,9 @@ public class Message implements Serializable {
 
     public String toString() {
         String vc_string = ",";
-        for(int i = 0; i<vc.length; i++){
+        for (int i = 0; i < vc.length; i++) {
             vc_string += vc[i];
-            if(i != vc.length - 1){
+            if (i != vc.length - 1) {
                 vc_string += ".";
             }
         }

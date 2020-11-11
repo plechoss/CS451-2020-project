@@ -14,10 +14,6 @@ public class UDP implements Runnable {
     private static long pid;
     private static int id;
     private static List<Host> hosts;
-    private String barrierIP;
-    private int barrierPort;
-    private String signalIP;
-    private int signalPort;
 
     private static DatagramSocket socket;
     private static int port;

@@ -6,12 +6,11 @@ public class URB implements Runnable {
 
     private long pid;
     private static int id;
-    private List<Host> hosts;
+    private static List<Host> hosts;
 
     private static Map<Message, Set<Integer>> acks;
     private static Set<Message> delivered;
     private static Set<Message> forward;
-    private static Set<Integer> correct; //Set<long> maybe???
 
     public URB(long pid, int id, List<Host> hosts) {
         this.pid = pid;
@@ -19,12 +18,6 @@ public class URB implements Runnable {
         this.hosts = hosts;
 
         this.acks = new HashMap<>();
-        this.correct = new HashSet<>();
-
-        for (Host host : hosts) {
-            correct.add(host.getId());
-        }
-
         this.delivered = new HashSet<>();
         this.forward = new HashSet<>();
     }
@@ -36,11 +29,11 @@ public class URB implements Runnable {
             try {
                 wait(200);
                 for (Message msg : forward) {
-                    if(acks.get(msg).containsAll(correct) && !delivered.contains(msg)) {
+                    if (canDeliver(msg) && !delivered.contains(msg)) {
                         delivered.add(msg);
-                        FIFO.deliver(msg);
+
                         //deliver the message higher up
-                        Main.logMessage(msg);
+                        FIFO.deliver(msg);
                     }
                 }
             } catch (InterruptedException e) {
@@ -55,7 +48,7 @@ public class URB implements Runnable {
     }
 
     public static void deliver(Message msg) { //DONE
-        if(acks.containsKey(msg)){
+        if (acks.containsKey(msg)) {
             acks.get(msg).add(msg.getSender_id());
         } else {
             acks.put(msg, new HashSet<>(msg.getSender_id()));
@@ -66,7 +59,10 @@ public class URB implements Runnable {
         }
     }
 
-    public static void onCrash(int pi) { //DONE
-        correct.remove(pi);
+    public static boolean canDeliver(Message msg) {
+        int hosts_size = hosts.size();
+        int ack_size = acks.get(msg).size();
+
+        return ack_size > hosts_size / 2;
     }
 }
