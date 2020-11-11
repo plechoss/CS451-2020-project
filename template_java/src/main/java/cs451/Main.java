@@ -1,11 +1,14 @@
 package cs451;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class Main {
+    List<Message> delivered = new ArrayList<>();
 
     private static void handleSignal() {
         //immediately stop network packet processing
@@ -46,6 +49,10 @@ public class Main {
         logger.info(line);
     }
 
+    public static void deliver(Message msg){
+
+    }
+
     public static boolean isRunning() {
         return true;
     }
@@ -84,10 +91,10 @@ public class Main {
 
         System.out.println("Broadcasting messages...");
 
-        new Thread(new URB(pid, parser.myId(), parser.hosts(), parser.barrierIp(), parser.barrierPort(), parser.signalIp(), parser.signalPort())).start();
+        new Thread(new FIFO(pid, parser.myId(), parser.hosts(), parser.barrierIp(), parser.barrierPort(), parser.signalIp(), parser.signalPort())).start();
 
         for (int i = 0; i < 10; i++) {
-            URB.broadcast(new Message(i, parser.myId(), parser.myId()));
+            FIFO.broadcast(new Message(i, parser.myId(), parser.myId()));
         }
 
         System.out.println("Signaling end of broadcasting messages");
