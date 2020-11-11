@@ -38,7 +38,7 @@ public class URB implements Runnable {
                 for (Message msg : forward) {
                     if(acks.get(msg).containsAll(correct) && !delivered.contains(msg)) {
                         delivered.add(msg);
-
+                        FIFO.deliver(msg);
                         //deliver the message higher up
                         Main.logMessage(msg);
                     }

@@ -48,6 +48,7 @@ public class FIFO implements Runnable {
             //deliver-pending stuff
             boolean keepGoing = true;
             while (keepGoing) {
+                keepGoing = false;
                 for (Message m : pending) {
                     boolean canDeliverMessage = true;
                     int[] msg_vc = m.getVector_clock();
@@ -61,6 +62,7 @@ public class FIFO implements Runnable {
                         pending.remove(m);
                         Main.deliver(msg);
                         vc[m.getCreator_id()]++;
+                        keepGoing = true;
                     }
                 }
             }
