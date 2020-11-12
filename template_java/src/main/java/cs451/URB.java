@@ -46,6 +46,8 @@ public class URB implements Runnable {
     }
 
     public static void broadcast(Message msg) { //DONE
+        System.out.println("Trying to broadcast msg: ");
+        System.out.println(msg);
         forward.put(msg, true);
         BEB.broadcast(msg);
     }

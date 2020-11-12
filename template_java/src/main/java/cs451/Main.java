@@ -1,7 +1,9 @@
 package cs451;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.FileHandler;
@@ -11,17 +13,15 @@ import java.util.logging.SimpleFormatter;
 public class Main {
     private static List<Message> delivered = new ArrayList<>();
 
-    private static void writeDeliveredMessages(){
-
-    }
-
     private static void handleSignal() {
         //immediately stop network packet processing
         System.out.println("Immediately stopping network packet processing.");
+        FIFO.shutdown();
 
         //write/flush output file if necessary
         System.out.println("Writing output.");
-        //writeDeliveredMessages();
+        FIFO.writeDeliveredMessages();
+        //System.out.println(delivered);
     }
 
     private static void initSignalHandlers() {
@@ -98,18 +98,22 @@ public class Main {
         System.out.println("Broadcasting messages...");
 
         new Thread(new FIFO(pid, parser.myId(), parser.hosts())).start();
+
+        if(FIFO.initWriter(parser.output())==-1){
+            System.out.println("Writer error, can't initialize printWriter");
+        }
+
         int[] vc = new int[parser.hosts().size()];
 
         for (int i = 0; i < parser.hosts().size(); i++) {
             vc[i] = 0;
         }
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 1; i < 101; i++) {
             FIFO.broadcast(new Message(i, parser.myId(), parser.myId(), vc));
         }
 
         System.out.println("Signaling end of broadcasting messages");
-        System.out.println(delivered);
         coordinator.finishedBroadcasting();
 
         while (true) {

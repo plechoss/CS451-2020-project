@@ -9,6 +9,8 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import static java.lang.Thread.sleep;
+
 //mostly based on https://www.baeldung.com/udp-in-java
 public class UDP implements Runnable {
     private static long pid;
@@ -45,6 +47,7 @@ public class UDP implements Runnable {
                 packet = new DatagramPacket(buf, buf.length, ip, host.getPort());
                 socket.send(packet);
             }
+            sleep(5);
         } catch (Exception e) {
             System.out.println("Error in broadcast()");
             System.out.println(e.toString());
