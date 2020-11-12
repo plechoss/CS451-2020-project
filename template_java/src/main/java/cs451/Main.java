@@ -1,11 +1,8 @@
 package cs451;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
 
@@ -27,10 +24,6 @@ public class Main {
                 handleSignal();
             }
         });
-    }
-
-    public static boolean isRunning() {
-        return true;
     }
 
     public static void main(String[] args) throws InterruptedException, IOException {
@@ -59,6 +52,7 @@ public class Main {
             System.out.println("Config: " + parser.config());
         }
 
+        //https://stackoverflow.com/questions/24666805/java-only-read-first-line-of-a-file
         BufferedReader configReader = new BufferedReader(new FileReader(parser.config()));
         String firstLine = configReader.readLine();
         int num_messages = Integer.parseInt(firstLine);
