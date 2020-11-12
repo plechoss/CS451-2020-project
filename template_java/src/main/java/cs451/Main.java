@@ -1,17 +1,9 @@
 package cs451;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 public class Main {
-    private static List<Message> delivered = new ArrayList<>();
 
     private static void handleSignal() {
         //immediately stop network packet processing
@@ -31,32 +23,6 @@ public class Main {
                 handleSignal();
             }
         });
-    }
-
-    public static void logMessage(Message msg) {
-        String line = "received " + msg.getSeq_nr() + " from " + msg.getSender_id() + "\n";
-
-        String logName = "logMain" + ProcessHandle.current().pid();
-        Logger logger = Logger.getLogger(logName);
-        FileHandler fh;
-
-        try {
-            // This block configure the logger with handler and formatter
-            fh = new FileHandler("/Users/michal/Desktop/logs/" + logName, true);
-            logger.addHandler(fh);
-
-            SimpleFormatter formatter = new SimpleFormatter();
-            fh.setFormatter(formatter);
-
-        } catch (SecurityException | IOException e) {
-            e.printStackTrace();
-        }
-
-        logger.info(line);
-    }
-
-    public static void deliver(Message msg){
-        delivered.add(msg);
     }
 
     public static boolean isRunning() {

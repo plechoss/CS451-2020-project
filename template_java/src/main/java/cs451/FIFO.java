@@ -12,6 +12,8 @@ public class FIFO implements Runnable {
     private long pid;
     private static int id;
     private static List<Host> hosts;
+
+    //https://stackoverflow.com/a/25630263/14410028
     private static Queue<Message> delivered = new ConcurrentLinkedQueue<>();
 
     private static ConcurrentHashMap<Message, Boolean> pending;
@@ -40,7 +42,8 @@ public class FIFO implements Runnable {
     public static void broadcast(Message msg) {
         if (!shutdown) {
             Message new_message = new Message(msg.getSeq_nr(), msg.getCreator_id(), msg.getSender_id(), vc);
-            Main.deliver(new_message);
+            //Main.deliver(new_message);
+            delivered.add(new_message);
             URB.broadcast(new_message);
             vc[id - 1]++;
         }
@@ -52,7 +55,7 @@ public class FIFO implements Runnable {
 
     public static void deliver(Message msg) {
         if (!shutdown) {
-            if (msg.getCreator_id() != id) {
+            if (msg.getCreator_id() != id && !pending.containsKey(msg)) {
                 pending.put(msg, true);
                 //deliver-pending stuff
                 boolean keepGoing = true;
@@ -68,10 +71,11 @@ public class FIFO implements Runnable {
                             }
                         }
                         if (canDeliverMessage) {
-                            pending.remove(m);
-                            Main.deliver(msg);
+                            //Main.deliver(msg);
+                            delivered.add(m);
                             vc[m.getCreator_id() - 1]++;
                             keepGoing = true;
+                            pending.remove(m);
                         }
                     }
                 }
@@ -80,6 +84,7 @@ public class FIFO implements Runnable {
     }
 
     public static int initWriter(String path){
+        System.out.println("Initializing writer");
         try{
             writer = new PrintWriter(new FileWriter(path));
         } catch(Exception e){
@@ -89,6 +94,7 @@ public class FIFO implements Runnable {
     }
 
     public static void writeDeliveredMessages(){
+        System.out.println("Writing delivered messages");
         String line = "";
         for (Message msg : delivered) {
             if(msg.getCreator_id()==id){

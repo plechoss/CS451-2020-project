@@ -48,7 +48,6 @@ public class RB implements Runnable {
                 receivedFrom.get(msg.getSender_id()).add(msg);
             }
         }
-        Main.logMessage(msg);
     }
 
     public static void onCrash(int pi) {

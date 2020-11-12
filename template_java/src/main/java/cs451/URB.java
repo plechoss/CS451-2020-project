@@ -31,7 +31,7 @@ public class URB implements Runnable {
         while (true) {
             try {
                 for (Message msg : forward.keySet()) {
-                    if (canDeliver(msg) && !delivered.contains(msg)) {
+                    if (canDeliver(msg) && !delivered.containsKey(msg)) {
                         delivered.put(msg, true);
 
                         //deliver the message higher up
@@ -46,8 +46,6 @@ public class URB implements Runnable {
     }
 
     public static void broadcast(Message msg) { //DONE
-        System.out.println("Trying to broadcast msg: ");
-        System.out.println(msg);
         forward.put(msg, true);
         BEB.broadcast(msg);
     }
