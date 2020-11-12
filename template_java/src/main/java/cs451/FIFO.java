@@ -42,7 +42,6 @@ public class FIFO implements Runnable {
     public static void broadcast(Message msg) {
         if (!shutdown) {
             Message new_message = new Message(msg.getSeq_nr(), msg.getCreator_id(), msg.getSender_id(), vc);
-            //Main.deliver(new_message);
             delivered.add(new_message);
             URB.broadcast(new_message);
             vc[id - 1]++;
@@ -71,7 +70,6 @@ public class FIFO implements Runnable {
                             }
                         }
                         if (canDeliverMessage) {
-                            //Main.deliver(msg);
                             delivered.add(m);
                             vc[m.getCreator_id() - 1]++;
                             keepGoing = true;
@@ -83,24 +81,22 @@ public class FIFO implements Runnable {
         }
     }
 
-    public static int initWriter(String path){
-        System.out.println("Initializing writer");
-        try{
+    public static int initWriter(String path) {
+        try {
             writer = new PrintWriter(new FileWriter(path));
-        } catch(Exception e){
+        } catch (Exception e) {
             return -1;
         }
         return 1;
     }
 
-    public static void writeDeliveredMessages(){
-        System.out.println("Writing delivered messages");
+    public static void writeDeliveredMessages() {
         String line = "";
         for (Message msg : delivered) {
-            if(msg.getCreator_id()==id){
+            if (msg.getCreator_id() == id) {
                 line = "b " + msg.getSeq_nr() + "\n";
             } else {
-                line = "d " + + msg.getCreator_id() + " " + msg.getSeq_nr() + "\n";
+                line = "d " + +msg.getCreator_id() + " " + msg.getSeq_nr() + "\n";
             }
             writer.write(line);
         }

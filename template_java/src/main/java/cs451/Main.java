@@ -1,5 +1,9 @@
 package cs451;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +33,7 @@ public class Main {
         return true;
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         Parser parser = new Parser(args);
         parser.parse();
 
@@ -55,6 +59,9 @@ public class Main {
             System.out.println("Config: " + parser.config());
         }
 
+        BufferedReader configReader = new BufferedReader(new FileReader(parser.config()));
+        String firstLine = configReader.readLine();
+        int num_messages = Integer.parseInt(firstLine);
 
         Coordinator coordinator = new Coordinator(parser.myId(), parser.barrierIp(), parser.barrierPort(), parser.signalIp(), parser.signalPort());
 
@@ -65,7 +72,7 @@ public class Main {
 
         new Thread(new FIFO(pid, parser.myId(), parser.hosts())).start();
 
-        if(FIFO.initWriter(parser.output())==-1){
+        if (FIFO.initWriter(parser.output()) == -1) {
             System.out.println("Writer error, can't initialize printWriter");
         }
 
@@ -75,7 +82,7 @@ public class Main {
             vc[i] = 0;
         }
 
-        for (int i = 1; i < 101; i++) {
+        for (int i = 1; i < num_messages + 1; i++) {
             FIFO.broadcast(new Message(i, parser.myId(), parser.myId(), vc));
         }
 
