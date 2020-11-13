@@ -27,12 +27,14 @@ public class URB implements Runnable {
 
     @Override
     public void run() {
-        new Thread(new BEB(pid, id, hosts)).start();
+        new Thread(new Sender(pid, id, hosts)).start();
+        new Thread(new Receiver(pid, id, hosts)).start();
         while (true) {
             try {
                 for (Message msg : forward.keySet()) {
                     if (canDeliver(msg) && !delivered.containsKey(msg)) {
                         delivered.put(msg, true);
+                        Sender.stopBroadcasting(msg);
 
                         //deliver the message higher up
                         FIFO.deliver(msg);
@@ -47,7 +49,7 @@ public class URB implements Runnable {
 
     public static void broadcast(Message msg) { //DONE
         forward.put(msg, true);
-        BEB.broadcast(msg);
+        Sender.broadcast(msg);
     }
 
     public static void deliver(Message msg) { //DONE
@@ -58,12 +60,12 @@ public class URB implements Runnable {
         }
         if (!forward.contains(msg)) {
             forward.put(msg, true);
-            BEB.broadcast(new Message(msg.getSeq_nr(), msg.getCreator_id(), id, msg.getVector_clock()));
+            Sender.broadcast(new Message(msg.getSeq_nr(), msg.getCreator_id(), id, msg.getVector_clock()));
         }
     }
 
     public static boolean canDeliver(Message msg) {
-        int hosts_size = hosts.size()-1;
+        int hosts_size = hosts.size() - 1;
         int ack_size = acks.getOrDefault(msg, new HashSet<>()).size();
 
         return ack_size >= hosts_size / 2;

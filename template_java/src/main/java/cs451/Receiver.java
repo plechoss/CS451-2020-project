@@ -6,7 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.List;
 
-public class Receiver implements Runnable{
+public class Receiver implements Runnable {
     private static long pid;
     private static int id;
     private static List<Host> hosts;

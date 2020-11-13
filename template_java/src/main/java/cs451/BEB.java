@@ -22,6 +22,7 @@ public class BEB implements Runnable {
     public static void broadcast(Message msg) {
         Sender.broadcast(msg);
     }
+
     public static void deliver(Message msg) {
         URB.deliver(msg);
     }

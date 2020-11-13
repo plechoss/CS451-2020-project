@@ -49,6 +49,10 @@ public class Sender implements Runnable {
         message_queue.add(msg);
     }
 
+    public static void stopBroadcasting(Message msg){
+        message_queue.remove(msg);
+    }
+
     public static void sendToAllHosts(Message msg) {
         try {
             byte[] buf = msg.toString().getBytes();
