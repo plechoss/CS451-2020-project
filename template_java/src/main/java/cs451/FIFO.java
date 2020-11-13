@@ -85,13 +85,13 @@ public class FIFO implements Runnable {
     }
 
     public static void writeDeliveredMessages() {
-        String line = "";
+        String line;
         for (Message msg : delivered) {
+            line = "";
             if (msg.getCreator_id() == id) {
-                line = "b " + msg.getSeq_nr() + "\n";
-            } else {
-                line = "d " + +msg.getCreator_id() + " " + msg.getSeq_nr() + "\n";
+                line += "b " + msg.getSeq_nr() + "\n";
             }
+            line += "d " + msg.getCreator_id() + " " + msg.getSeq_nr() + "\n";
             writer.write(line);
         }
         writer.close();
