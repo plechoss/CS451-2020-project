@@ -9,6 +9,7 @@ public class Main {
     private static void handleSignal() {
         //immediately stop network packet processing
         System.out.println("Immediately stopping network packet processing.");
+        System.out.println("Shutdown at: " + System.currentTimeMillis()/1000 + "s");
         FIFO.shutdown();
 
         //write/flush output file if necessary

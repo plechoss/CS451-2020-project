@@ -69,8 +69,8 @@ public class Message implements Serializable {
 
         Message msg = (Message) o;
 
-        return msg.seq_nr==seq_nr &&
-                msg.creator_id==creator_id;
+        return msg.seq_nr == seq_nr &&
+                msg.creator_id == creator_id;
     }
 
     @Override
