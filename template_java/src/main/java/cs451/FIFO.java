@@ -44,9 +44,9 @@ public class FIFO implements Runnable {
     public static void broadcast(Message msg) {
         if (!shutdown) {
             Message new_message = new Message(msg.getSeq_nr(), msg.getCreator_id(), msg.getSender_id(), vc);
-            //System.out.println("Constructing a new messsage with seq_nr: " + new_message.getSeq_nr() + ", creator: " + new_message.getCreator_id() + " and vc: " + vc)
+            //System.out.println("Constructing a new message with seq_nr: " + new_message.getSeq_nr() + ", creator: " + new_message.getCreator_id() + " and vc: " + vc)
             try {
-                sleep(5);
+                sleep(15);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
