@@ -38,7 +38,7 @@ public class URB implements Runnable {
                         FIFO.deliver(msg);
                     }
                 }
-                sleep(50);
+                sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -63,7 +63,7 @@ public class URB implements Runnable {
     }
 
     public static boolean canDeliver(Message msg) {
-        int hosts_size = hosts.size();
+        int hosts_size = hosts.size()-1;
         int ack_size = acks.getOrDefault(msg, new HashSet<>()).size();
 
         return ack_size >= hosts_size / 2;
