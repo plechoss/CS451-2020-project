@@ -1,6 +1,7 @@
 package cs451;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -32,6 +33,16 @@ public class Main {
         parser.parse();
 
         initSignalHandlers();
+        //create output file
+        File file = new File(parser.output());
+
+        //https://examples.javacodegeeks.com/core-java/io/file/create-new-empty-file/
+        try {
+            file.createNewFile();
+        }
+        catch (IOException ioe) {
+            System.out.println("Error while creating empty file: " + ioe);
+        }
 
         // example
         long pid = ProcessHandle.current().pid();
