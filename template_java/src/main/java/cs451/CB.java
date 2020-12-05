@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -14,6 +15,7 @@ public class CB implements Runnable {
     private long pid;
     private static int id;
     private static List<Host> hosts;
+    private static Set<Integer> dependencies;
 
     //https://stackoverflow.com/a/25630263/14410028
     private static Queue<Message> delivered = new ConcurrentLinkedQueue<>();
@@ -23,11 +25,12 @@ public class CB implements Runnable {
 
     private static PrintWriter writer;
 
-    public CB(long pid, int id, List<Host> hosts) {
+    public CB(long pid, int id, List<Host> hosts, Set<Integer> dependencies) {
         this.pid = pid;
         this.id = id;
         this.hosts = hosts;
         this.shutdown = false;
+        this.dependencies = dependencies;
 
         this.vc = new int[hosts.size()];
         for (int i = 0; i < hosts.size(); i++) {
@@ -68,7 +71,7 @@ public class CB implements Runnable {
                         boolean canDeliverMessage = true;
                         int[] msg_vc = m.getVector_clock();
                         for (int i = 0; i < hosts.size(); i++) {
-                            if (vc[i] < msg_vc[i]) {
+                            if (dependencies.contains(i) && vc[i] < msg_vc[i]) {
                                 canDeliverMessage = false;
                                 break;
                             }
@@ -95,13 +98,13 @@ public class CB implements Runnable {
     }
 
     public static void writeDeliveredMessages() {
-        String line = "";
+        String line;
         for (Message msg : delivered) {
+            line = "";
             if (msg.getCreator_id() == id) {
-                line = "b " + msg.getSeq_nr() + "\n";
-            } else {
-                line = "d " + +msg.getCreator_id() + " " + msg.getSeq_nr() + "\n";
+                line += "b " + msg.getSeq_nr() + "\n";
             }
+            line += "d " + msg.getCreator_id() + " " + msg.getSeq_nr() + "\n";
             writer.write(line);
         }
         writer.close();

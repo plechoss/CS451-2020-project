@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Main {
 
@@ -69,6 +72,22 @@ public class Main {
         String firstLine = configReader.readLine();
         int num_messages = Integer.parseInt(firstLine);
 
+
+
+        int line_num = 1;
+        Set<Integer> dependencies = new HashSet<Integer>();
+
+        for (String line = configReader.readLine(); line != null; line = configReader.readLine()) {
+            if(line_num == parser.myId()){
+                String[] split = line.split("\\s+");
+                for(String dependency : split){
+                    dependencies.add(Integer.parseInt(dependency));
+                }
+                break;
+            }
+            line_num++;
+        }
+
         Coordinator coordinator = new Coordinator(parser.myId(), parser.barrierIp(), parser.barrierPort(), parser.signalIp(), parser.signalPort());
 
         System.out.println("Waiting for all processes for finish initialization");
@@ -76,6 +95,7 @@ public class Main {
 
         System.out.println("Broadcasting messages...");
 
+        new Thread(new CB(pid, parser.myId(), parser.hosts(), dependencies)).start();
         new Thread(new FIFO(pid, parser.myId(), parser.hosts())).start();
 
         if (FIFO.initWriter(parser.output()) == -1) {
