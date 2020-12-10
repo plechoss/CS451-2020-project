@@ -31,6 +31,9 @@ public class CB implements Runnable {
         this.hosts = hosts;
         this.shutdown = false;
         this.dependencies = dependencies;
+        System.out.println("My dependencies are");
+        System.out.println(dependencies);
+
 
         this.vc = new int[hosts.size()];
         for (int i = 0; i < hosts.size(); i++) {
@@ -47,7 +50,7 @@ public class CB implements Runnable {
     public static void broadcast(Message msg) {
         if (!shutdown) {
             Message new_message = new Message(msg.getSeq_nr(), msg.getCreator_id(), msg.getSender_id(), vc);
-            System.out.println("Constructing a new message with seq_nr: " + new_message.getSeq_nr() + ", creator: " + new_message.getCreator_id() + " and vc: " + vc);
+            System.out.println("Constructing a new message with seq_nr: " + new_message.getSeq_nr() + ", creator: " + new_message.getCreator_id() + " and vc: " + vc.toString());
 
             delivered.add(new_message);
             URB.broadcast(new_message);
@@ -71,7 +74,7 @@ public class CB implements Runnable {
                         boolean canDeliverMessage = true;
                         int[] msg_vc = m.getVector_clock();
                         for (int i = 0; i < hosts.size(); i++) {
-                            if (dependencies.contains(i) && vc[i] < msg_vc[i]) {
+                            if ((dependencies.contains(i+1) || m.getCreator_id()==i+1) && vc[i] < msg_vc[i]) {
                                 canDeliverMessage = false;
                                 break;
                             }
