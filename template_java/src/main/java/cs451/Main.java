@@ -78,8 +78,6 @@ public class Main {
         Set<Integer> dependencies = new HashSet<Integer>();
 
         for (String line = configReader.readLine(); line != null; line = configReader.readLine()) {
-            System.out.println("Config line");
-            System.out.println(line);
             if(line_num == parser.myId()){
                 String[] split = line.split("\\s+");
                 for(String dependency : split){
@@ -89,10 +87,6 @@ public class Main {
             }
             line_num++;
         }
-
-        System.out.println("My id is " + parser.myId());
-        System.out.println("My dependencies are:");
-        System.out.println(dependencies);
 
         Coordinator coordinator = new Coordinator(parser.myId(), parser.barrierIp(), parser.barrierPort(), parser.signalIp(), parser.signalPort());
 

@@ -31,9 +31,6 @@ public class CB implements Runnable {
         this.hosts = hosts;
         this.shutdown = false;
         this.dependencies = dependencies;
-        System.out.println("My dependencies are");
-        System.out.println(dependencies);
-
 
         this.vc = new int[hosts.size()];
         for (int i = 0; i < hosts.size(); i++) {
@@ -50,7 +47,7 @@ public class CB implements Runnable {
     public static void broadcast(Message msg) {
         if (!shutdown) {
             Message new_message = new Message(msg.getSeq_nr(), msg.getCreator_id(), msg.getSender_id(), vc);
-            System.out.println("Constructing a new message with seq_nr: " + new_message.getSeq_nr() + ", creator: " + new_message.getCreator_id() + " and vc: " + vc.toString());
+            //System.out.println("Constructing a new message with seq_nr: " + new_message.getSeq_nr() + ", creator: " + new_message.getCreator_id() + " and vc: " + vc.toString());
 
             delivered.add(new_message);
             URB.broadcast(new_message);
