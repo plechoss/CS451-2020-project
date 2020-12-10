@@ -37,7 +37,7 @@ public class URB implements Runnable {
                         Sender.stopBroadcasting(msg);
 
                         //deliver the message higher up
-                        FIFO.deliver(msg);
+                        CB.deliver(msg);
                     }
                 }
                 sleep(10);

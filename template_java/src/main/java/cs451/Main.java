@@ -14,11 +14,11 @@ public class Main {
         //immediately stop network packet processing
         System.out.println("Immediately stopping network packet processing.");
         System.out.println("Shutdown at: " + System.currentTimeMillis()/1000 + "s");
-        FIFO.shutdown();
+        CB.shutdown();
 
         //write/flush output file if necessary
         System.out.println("Writing output.");
-        FIFO.writeDeliveredMessages();
+        CB.writeDeliveredMessages();
         //System.out.println(delivered);
     }
 
@@ -72,8 +72,6 @@ public class Main {
         String firstLine = configReader.readLine();
         int num_messages = Integer.parseInt(firstLine);
 
-
-
         int line_num = 1;
         Set<Integer> dependencies = new HashSet<Integer>();
 
@@ -96,9 +94,9 @@ public class Main {
         System.out.println("Broadcasting messages...");
 
         new Thread(new CB(pid, parser.myId(), parser.hosts(), dependencies)).start();
-        new Thread(new FIFO(pid, parser.myId(), parser.hosts())).start();
+        //new Thread(new FIFO(pid, parser.myId(), parser.hosts())).start();
 
-        if (FIFO.initWriter(parser.output()) == -1) {
+        if (CB.initWriter(parser.output()) == -1) {
             System.out.println("Writer error, can't initialize printWriter");
         }
 
@@ -109,7 +107,7 @@ public class Main {
         }
 
         for (int i = 1; i < num_messages + 1; i++) {
-            FIFO.broadcast(new Message(i, parser.myId(), parser.myId(), vc));
+            CB.broadcast(new Message(i, parser.myId(), parser.myId(), vc));
         }
 
         System.out.println("Signaling end of broadcasting messages");
