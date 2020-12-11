@@ -71,6 +71,7 @@ public class CB implements Runnable {
                         boolean canDeliverMessage = true;
                         int[] msg_vc = m.getVector_clock();
                         for (int i = 0; i < hosts.size(); i++) {
+                            //check for creator_id in order to keep the fifo order for messages from sources that aren't in the dependencies
                             if ((dependencies.contains(i+1) || m.getCreator_id()==i+1) && vc[i] < msg_vc[i]) {
                                 canDeliverMessage = false;
                                 break;
