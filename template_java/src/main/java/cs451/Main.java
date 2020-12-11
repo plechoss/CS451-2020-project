@@ -69,7 +69,7 @@ public class Main {
         //https://stackoverflow.com/questions/24666805/java-only-read-first-line-of-a-file
         String config_parsed = parser.config();
         String config_test = "/Users/michal/Desktop/CS-451/CS451-2020-project/config_test";
-        BufferedReader configReader = new BufferedReader(new FileReader(config_test));
+        BufferedReader configReader = new BufferedReader(new FileReader(config_parsed));
         String firstLine = configReader.readLine();
         int num_messages = Integer.parseInt(firstLine);
 
